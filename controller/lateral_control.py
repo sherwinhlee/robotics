@@ -69,6 +69,9 @@ def lateral_control(prev_state, init_pos, pose, init_heading, yaw, vel):
       prev_state (int): Update of trajectory state
     """
     
+    # Default rotational velocity
+    angular_z = 0
+    
     # Position error
     del_x = init_pos[0] - pose[0]
     del_y = init_pos[1] - pose[1]
