@@ -18,6 +18,8 @@ import geometry_msgs.msg
 import tf
 import os
 import sys
+sys.path.append('../')
+
 from lateral_control import lateral_control
 from helper.trajectory import liveplot
 from helper.logprint import logprint
@@ -25,7 +27,6 @@ from geometry_msgs.msg import Twist, PoseStamped
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 
 hostname = os.uname()[1]
-sys.path.append('../')
 MIN_V = 0
 MAX_V = 0.35
 glob_cmd_vel = 0
