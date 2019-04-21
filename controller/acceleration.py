@@ -76,7 +76,7 @@ class AccControl():
       coordsys (str): Cardinal direction of 0 heading (default is 's')
       delay (int): Time delay for robot motion begins (in sec)
     """
-    def __init__(self, robot, accel, vel=None, coordsys='s', delay=0):
+    def __init__(self, robot, accel, vel='None', coordsys='s', delay=0):
         rospy.init_node('acc_controller')
         self.hz = 10
         self.rate = rospy.Rate(self.hz)
@@ -94,8 +94,8 @@ class AccControl():
         # Input arguments
         self.init_accel = accel
         self.accel = self.init_accel
-        if vel is not None:
-            self.vel = vel
+        if vel != 'None':
+            self.vel = float(vel)
         else:
             self.vel = glob_cmd_vel
         self.delay = delay * self.hz
@@ -210,7 +210,7 @@ if __name__== "__main__":
     #obj = AccControl(robot='create1',accel=0.05,vel=None,coordsys='s',delay=10)
     obj = AccControl(robot=sys.argv[1],
                      accel=float(sys.argv[2]),
-                     vel=float(sys.argv[3]),
+                     vel=sys.argv[3],
                      coordsys=sys.argv[4],
                      delay=int(sys.argv[5]))
     obj.control()
