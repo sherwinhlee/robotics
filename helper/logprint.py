@@ -4,13 +4,13 @@ Helper function to print live data from ROS subscribers to a log file.
 Primarily used for import to the controller scripts. Can also be tested
 with arguments passed in directly from the command line.
 
-Example: 
+Example:
     $ python logprint.py arg1 arg2 arg3 arg4 arg5 arg6 arg7
-    
+
 Questions? sherwinl@bu.edu, BU CODES Lab
 """
 import sys
-import ast 
+import ast
 
 def logprint(timer,init_pos,pose,orient,yaw,ov_unit,cmd_vel):
     """
@@ -25,7 +25,7 @@ def logprint(timer,init_pos,pose,orient,yaw,ov_unit,cmd_vel):
       ov_unit (arr[float]): Robot orientation in vector form
       cmd_vel (arr[float]): Commanded linear and angular velocities
     """
-    print(timer)
+    print(timer/10.0)
     print('initial position:',
           round(init_pos[0],4),',',
           round(init_pos[1],4))
@@ -43,7 +43,7 @@ def logprint(timer,init_pos,pose,orient,yaw,ov_unit,cmd_vel):
     print('cmd_vel:',
           cmd_vel[0],',',
           cmd_vel[1],'\n')
-    
+
 if __name__== "__main__":
     logprint(int(sys.argv[1]),
              ast.literal_eval(sys.argv[2]),
