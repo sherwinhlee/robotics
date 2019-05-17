@@ -31,7 +31,7 @@ The repository is divided into two modules: **controller**, which contains all c
 - `helper.logprint` is a printing module that prints a running log of the robot's information as it travels along a path. It is called directly from `controller.acceleration` and will either print to the console or write to an external text file depending on whether or not there is a `sys.stdout` command in the acceleration controller, which is not included by default.
 
 ## Setup Instructions
-As specified earlier, this programming environment is written specifically for use in the Boston University (BU) Shared Robotics Lab (SRL). The following points outline the experimental setup conditions and instructions for running CAV control trials. More detailed setup information can be found through the [BU Robotics Lab Wiki](http://wiki.bu.edu/robotics/index.php/Main_Page). Specific SRL inquiries should be directed to Zack Serlin: zserlin@bu.edu.
+As specified earlier, this programming environment is written specifically for use in the Boston University (BU) Shared Robotics Lab (SRL). The following points outline the experimental setup conditions and instructions for running CAV control trials. More detailed setup information can be found through the [BU Robotics Lab Wiki](http://wiki.bu.edu/robotics/index.php/Main_Page). Specific SRL inquiries should be directed to Zack Serlin: zserlin@bu.edu. 
 
 ### Setup
 Prior to running experiments, the following computers will need to be set up:
@@ -39,12 +39,11 @@ Prior to running experiments, the following computers will need to be set up:
 - The Windows computer #1 (**"windows1"**) contains the *Motive* software that runs the *OptiTrack* motion capture system.
 - The Windows computer #2 (**"windows2"**) contains the *Resolume Arena* software for projecting Mcity onto the lab floor from its six projectors.
 
-
 ### Instructions
 1. Undock the desired create robot from the wall charger, place it on the floor of the SRL experimental area, and point it directly at the south wall.
 2. Open *Motive* on windows1 and load the most recent calibration file. 
 3. Identify the create in *Motive*, select its markers, and right-click to create a rigid body. Name the rigid body "create#" with the # replaced by the create number.
-4. Turn on the lab floor projectors and open *Resolume Arena* on windows2. Load the Mcity map from the 'Files' pane and scale/position the image accordingly. Projection display settings can be configured in the "Advanced Output" window.
+4. Turn on the lab floor projectors and open *Resolume Arena* on windows2. Load the Mcity map from the right-hand side 'Files' pane and drag the image to the top-left cell under "Column 1." Scale/position the image accordingly. Projection display settings can be configured in Output > Advanced.
 5. On burobotics, start a new Terminator session with multiple windows.
 6. In one window, run `roscore` and in another run `roslaunch vrpn_client_ros multirobot.launch server:=optitrack`.
 7. Verify the create's heading/orientation configuration by running `$ rostopic echo /create#/pose` in a third window. The robot's position information will then be outputted live to the terminal window. Under `orientation`, note the z and w values of the orientation's quaternion. Convert these values to a euler angle (in degrees). This angle will be the `zero_hd` parameter in the `controller.acceleration.AccControl()` class. In a default environment, the zero heading is the SRL's south wall and this value should be 0.
@@ -54,6 +53,10 @@ Prior to running experiments, the following computers will need to be set up:
 11. In another Terminator window, `cd` into the directory where the repository is stored.
 12. Open `main.py` using a text editor/IDE and adjust the environment parameters as needed. See the docstring for `controller.acceleration.AccControl()` before creating an instance of the acceleration controller object.
 13. Run `$ python main.py` to start the control experiment.
+
+### Notes
+1. Depending on which motion capture / VRPN launch file is used, the create robot's namespace in the ROS subscriber may be different. This can be verified with `$ rostopic list` to see what the full namespace of `/create#/pose` is. The `self.mocap` attribute can then be updated accordingly. 
+2. The optimization module in `controller.eco_and` uses a sequential least-squares programming solver, which can be sensitive to the chosen starting points, particularly tau or `t0`, which is the intersection crossing time. The code sets the starting tau to be the starting light's interval, but in some cases, this may not lead to local minimum convergence.
 
 ## References
 1. [A Real-Time Optimal Eco-driving for Autonomous Vehicles Crossing Multiple Signalized Intersections](https://arxiv.org/pdf/1901.11423.pdf). Xiangyu Meng, Christos G. Cassandras. January 2019.
