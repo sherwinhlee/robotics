@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 """
 Module to apply lateral control so robot follows a defined straight-
-line trajectory based on pre-defined threshold of 3cm. Primary imported
-into the main controller file. If the robot stays within the threshold
-of 3cm, it is considered "on-course."
+line trajectory based on pre-defined threshold of 3cm. Called from
+the controller.acceleration module. If the robot stays within the
+threshold of 3cm, it is considered "on-course."
 
-Trajectory states are as follows: 
+Trajectory states are as follows:
     0: on-course, maintaining heading with no rotational velocity
     1: off-course, computes rotational velocity to correct heading
-    2: on-course, but requires heading correction 
+    2: on-course, but requires heading correction
 
 Questions? sherwinl@bu.edu, BU CODES Lab
 """
+from __future__ import division
 import numpy as np
 
 def angular(diff_vec, diff_ang, vel):
     """
-    Computes angular velocity of robot when entering back into 
+    Computes angular velocity of robot when entering back into
     trajectory path threshold.
 
     Args:
@@ -30,10 +31,10 @@ def angular(diff_vec, diff_ang, vel):
     sweep_ang = 2*diff_ang
     arc_len = np.linalg.norm(diff_vec)*diff_ang*np.sin(diff_ang)**(-1)
     return (sweep_ang*vel)/arc_len
-    
+
 def heading(angle):
     """
-    Computes cardinal direction based on heading/orientation. Assumes 
+    Computes cardinal direction based on heading/orientation. Assumes
     robot heading is parallel to cartesian axes and 0 heading is south.
 
     Args:
@@ -50,7 +51,7 @@ def heading(angle):
         return 's'
     elif np.abs(angle) >= 17*np.pi/18: # North
         return 'n'
-   
+
 def lateral_control(prev_state, init_pos, pose, init_heading, yaw, vel):
     """
     Lateral control function to adjust robot heading based on
@@ -68,10 +69,10 @@ def lateral_control(prev_state, init_pos, pose, init_heading, yaw, vel):
       angular_z (float): Angular velocity for cmd_vel publisher
       prev_state (int): Update of trajectory state
     """
-    
+    global depart_ang, return_ang, arc_rad
     # Default rotational velocity
     angular_z = 0
-    
+
     # Position error
     del_x = init_pos[0] - pose[0]
     del_y = init_pos[1] - pose[1]
@@ -111,11 +112,11 @@ def lateral_control(prev_state, init_pos, pose, init_heading, yaw, vel):
                 return_ang = -(np.pi+depart_ang)
                 angular_z = -sweep_ang
             else:
-                if (((depart_ang < -np.pi/2) and (yaw > return_ang)) or 
+                if (((depart_ang < -np.pi/2) and (yaw > return_ang)) or
                 ((depart_ang > -np.pi/2) and (yaw < return_ang))):
                     angular_z = 0
                 else:
                     angular_z = -(vel / arc_rad)
             prev_state = 1
-    
+
     return angular_z, prev_state
