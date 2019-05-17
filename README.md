@@ -20,9 +20,9 @@ Beyond these constants, other environmental variables, like traffic light cycle 
 ## Repository
 The repository is divided into two modules: **controller**, which contains all code pertaining to the control and movement of robots, and **helper**, which contains an assortment of helper functions. Experiments can be run directly from `main.py`, through which all trial parameters can be specified. An overview of the module is outlined below with additional class and function-specific docstrings located in each file:
 ### controller 
-- `controller.acceleration` is the main acceleration controller file. It can be called through the `main.py` wrapper, imported into another file, or run directly from the terminal. Its main `AccControl()` class takes as arguments the experiment trial type, specific robot being used, a constant acceleration command, a constant velocity command (with no acceleration), a calibration parameter for the motion capture system, and a delay interval before the robots begin to move.
+- `controller.acceleration` is the main acceleration controller file. It can be called through the `main.py` wrapper or imported into another file. Its main `AccControl()` class takes as arguments the experiment trial type, specific robot being used, a constant acceleration command, a constant velocity command (with no acceleration), a calibration parameter for the motion capture system, and a delay interval before the robots begin to move.
 - `controller.lateral_control` acts as a helper function to control the lateral motion of the robot as it travels along a straight-line path. It computes an angular velocity command when the robot drifts outside a 3cm threshold.
-- `controller.eco_and` is the optimization module that computes an optimal acceleration profile. It formulates a nonlinear constrained optimization problem based on [(1)](https://arxiv.org/pdf/1901.11423.pdf), and uses scipy's SLSQP (Sequential Least-Squares Programming) solver. The problem takes as inputs an initial velocity, traffic light information (red/green light cycle times, starting light, time elapsed into the starting light's interval), distance to the intersection, and starting points for the decision variables. Additional parameters are assumed constant within the environment (see **Model & Environment**).
+- `controller.eco_and` is the optimization module that computes an optimal acceleration profile. It formulates a nonlinear constrained optimization problem based on [(1)](https://arxiv.org/pdf/1901.11423.pdf), and uses scipy's SLSQP (Sequential Least-Squares Programming) solver. The problem takes as inputs an initial velocity, traffic light information (red/green light cycle times, starting light, time remaining of the starting light's interval), distance to the intersection, and starting points for the decision variables. Additional parameters are assumed constant within the environment (see **Model & Environment**).
 - `controller.trials` contains helper functions that run the experiment specified by the `trial` argument passed into `controller.acceleration`'s `AccControl()` class. The two trials that can be evaluated in this initial implementation are `"ECO-AND"` and `"HUMAN"`. Otherwise, the default argument is `None` and the controller runs either a constant acceleration or velocity experiment.
 - `controller.config` is a configuration file that initializes all the global variables that need to be accessed or updated across modules as each experiment is run. It is called directly from `main.py`.
 ### helper
@@ -40,7 +40,7 @@ Prior to running experiments, the following computers will need to be set up:
 - The Windows computer #2 (**"windows2"**) contains the *Resolume Arena* software for projecting Mcity onto the lab floor from its six projectors.
 
 ### Instructions
-1. Undock the desired create robot from the wall charger, place it on the floor of the SRL experimental area, and point it directly at the south wall.
+1. Undock the desired create robot from the wall charger, place it on the floor of the SRL experimental area, and point it directly at the south wall (where I-90 is).
 2. Open *Motive* on windows1 and load the most recent calibration file. 
 3. Identify the create in *Motive*, select its markers, and right-click to create a rigid body. Name the rigid body "create#" with the # replaced by the create number.
 4. Turn on the lab floor projectors and open *Resolume Arena* on windows2. Load the Mcity map from the right-hand side 'Files' pane and drag the image to the top-left cell under "Column 1." Scale/position the image accordingly. Projection display settings can be configured in Output > Advanced.
@@ -55,7 +55,7 @@ Prior to running experiments, the following computers will need to be set up:
 13. Run `$ python main.py` to start the control experiment.
 
 ### Notes
-1. Depending on which motion capture / VRPN launch file is used, the create robot's namespace in the ROS subscriber may be different. This can be verified with `$ rostopic list` to see what the full namespace of `/create#/pose` is. The `self.mocap` attribute can then be updated accordingly. 
+1. Depending on which motion capture / VRPN launch file is used, the create robot's namespace in the ROS subscriber may be different. This can be verified with `$ rostopic list` to see what the full namespace of `/create#/pose` is. The `self.mocap` attribute in `controller.acceleration.AccControl()` can then be updated accordingly. 
 2. The optimization module in `controller.eco_and` uses a sequential least-squares programming solver, which can be sensitive to the chosen starting points, particularly tau or `t0`, which is the intersection crossing time. The code sets the starting tau to be the starting light's interval, but in some cases, this may not lead to local minimum convergence.
 
 ## References
