@@ -9,6 +9,7 @@ Example:
 
 Questions? sherwinl@bu.edu, BU CODES Lab
 """
+from __future__ import division
 import sys
 import ast
 
@@ -25,19 +26,19 @@ def logprint(timer,init_pos,pose,orient,yaw,ov_unit,cmd_vel):
       ov_unit (arr[float]): Robot orientation in vector form
       cmd_vel (arr[float]): Commanded linear and angular velocities
     """
-    print(timer/10.0)
-    print('initial position:',
+    print(timer/10)
+    print('Initial position:',
           round(init_pos[0],4),',',
           round(init_pos[1],4))
-    print('pose:',
+    print('Current pose:',
           round(pose[0],4),',',
           round(pose[1],4))
-    print('orientation (q):',
+    print('Current orientation (quaternion):',
           round(orient[0],4),',',
           round(orient[1],4))
-    print('orientation (rad):',
+    print('Current orientation (euler):',
           round(yaw,4))
-    print('orientation vector:',
+    print('Orientation vector:',
           round(ov_unit[0],4),',',
           round(ov_unit[1],4))
     print('cmd_vel:',
